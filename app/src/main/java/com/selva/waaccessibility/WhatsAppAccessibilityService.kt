@@ -14,9 +14,9 @@ class WhatsAppAccessibilityService : AccessibilityService() {
         private const val TAG = "WAAccessibilityService"
     }
 
-    override fun onAccessibilityEvent(event: AccessibilityEvent) {
+    override fun onAccessibilityEvent(event: AccessibilityEvent?) {
 
-        when (event.eventType) {
+        when (event?.eventType) {
             AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED -> {
                 printAll(rootInActiveWindow)
             }
@@ -29,20 +29,21 @@ class WhatsAppAccessibilityService : AccessibilityService() {
         super.onServiceConnected()
         Log.d(TAG, "onServiceConnected")
 
-        val info = AccessibilityServiceInfo()
-        info.flags = AccessibilityServiceInfo.DEFAULT
-        info.packageNames = PACKAGE_NAMES
-        info.eventTypes =
-            AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED or AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED
-        info.feedbackType = AccessibilityServiceInfo.FEEDBACK_GENERIC
+        val info = AccessibilityServiceInfo().apply {
+            flags = AccessibilityServiceInfo.DEFAULT
+            packageNames = PACKAGE_NAMES
+            eventTypes = AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED or
+                    AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED
+            feedbackType = AccessibilityServiceInfo.FEEDBACK_GENERIC
+        }
         serviceInfo = info
     }
 
     private fun printAll(nodeInfo: AccessibilityNodeInfo?) {
         nodeInfo?.run {
 
-            text?.let { text ->
-                Log.v(TAG, text.toString())
+            text?.run {
+                Log.v(TAG, this.toString())
             }
 
             for (position in 0 until childCount) {
